@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-
   <header class="bg-blue-700 text-white p-4 shadow-md">
     <div class="container mx-auto flex justify-between items-center">
       <h1 class="text-2xl font-bold">YMCA University PYQs & Movies</h1>
@@ -15,18 +14,88 @@
   </header>
 
   <main class="container mx-auto mt-10 px-4">
-
-    <!-- Upload PYQ -->
     <section class="bg-white p-6 rounded-lg shadow-lg mb-10">
       <h2 class="text-xl font-semibold mb-4">📤 Upload PYQ File</h2>
       <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-4">
         <input type="file" name="file" required class="block">
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
-          Upload
-        </button>
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">Upload</button>
       </form>
     </section>
 
-    <!-- PYQ List -->
     <section class="bg-white p-6 rounded-lg shadow-lg mb-10">
-      <h2 class="text-xl font-semibold m
+      <h2 class="text-xl font-semibold mb-4">📚 Download PYQs</h2>
+      <div id="fileList" class="space-y-4"></div>
+    </section>
+
+    <section class="bg-white p-6 rounded-lg shadow-lg mb-10">
+      <h2 class="text-xl font-semibold mb-4">🎥 Upload Movie (Admin Only)</h2>
+      <form action="/upload-movie" method="post" enctype="multipart/form-data" class="space-y-4">
+        <input type="file" name="movie" required class="block">
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded">Upload Movie</button>
+      </form>
+    </section>
+
+    <section class="bg-white p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-4">🎬 Movie Section</h2>
+      <div id="movieList" class="space-y-4"></div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-200 text-center text-gray-600 py-4 mt-10">
+    &copy; 2025 YMCA University PYQs & Movies. All rights reserved.
+  </footer>
+
+  <script>
+    async function fetchFiles() {
+      const res = await fetch('/files');
+      const files = await res.json();
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+      files.forEach(file => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center border-b pb-2";
+        item.innerHTML = `
+          <span class="text-gray-800">${file}</span>
+          <div class="space-x-2">
+            <a href="/uploads/${encodeURIComponent(file)}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded">View</a>
+            <a href="/uploads/${encodeURIComponent(file)}" download class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded">Download</a>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function fetchMovies() {
+      const res = await fetch('/movies');
+      const movies = await res.json();
+      const list = document.getElementById('movieList');
+      list.innerHTML = '';
+      movies.forEach(movie => {
+        const item = document.createElement('div');
+        item.className = "border p-4 rounded-lg shadow";
+        item.innerHTML = `
+          <div class="flex justify-between items-center">
+            <strong>${movie.name}</strong>
+            <span class="text-sm text-gray-500">Views: ${movie.views}</span>
+          </div>
+          <div class="mt-2 space-x-2">
+            <a href="/watch/${encodeURIComponent(movie.name)}" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded">Watch</a>
+            <a href="/download-movie/${encodeURIComponent(movie.name)}" download class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded">Download</a>
+            <button onclick="copyShareLink('${movie.name}')" class="bg-gray-600 hover:bg-gray-700 text-white py-1 px-3 rounded">Share</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function copyShareLink(name) {
+      const url = `${window.location.origin}/watch/${encodeURIComponent(name)}`;
+      navigator.clipboard.writeText(url);
+      alert("Link copied: " + url);
+    }
+
+    fetchFiles();
+    fetchMovies();
+  </script>
+</body>
+</html>
