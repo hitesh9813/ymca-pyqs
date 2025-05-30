@@ -17,5 +17,9 @@
     "url": "https://github.com/hitesh9813/ymca-pyqs/issues"
   },
   "homepage": "https://github.com/hitesh9813/ymca-pyqs#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.0"
+  }
 }
